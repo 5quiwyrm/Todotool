@@ -3,13 +3,11 @@ import os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-Todos_uncompleted = open("Todos_uncompleted.txt", 'r')
-Todos_uncompleted_raw: str = Todos_uncompleted.read()
-Todos_uncompleted.close()
+with open("Todos_uncompleted.txt", 'r') as Todos_uncompleted:
+    Todos_uncompleted_raw: str = Todos_uncompleted.read()
 
-Todos_completed = open("Todos_completed.txt", 'r')
-Todos_completed_raw: str = Todos_completed.read()
-Todos_completed.close()
+with open("Todos_completed.txt", 'r') as Todos_completed:
+    Todos_completed_raw: str = Todos_completed.read()
 
 def valid_date(date_int: int) -> bool:
     year = date_int // 10000
@@ -39,14 +37,12 @@ def to_todo(entry_str: str):
 
 def save_todos() -> int:
     try:
-        Todos_file = open("Todos_uncompleted.txt", 'w')
-        for entry in Todo_uncompleted_list:
-            Todos_file.write(str(entry))
-        Todos_file.close()
-        Todos_file = open("Todos_completed.txt", 'w')
-        for entry in Todo_completed_list:
-            Todos_file.write(str(entry))
-        Todos_file.close()
+        with open("Todos_uncompleted.txt", 'w') as Todos_file:
+            for entry in Todo_uncompleted_list:
+                Todos_file.write(str(entry))
+        with open("Todos_completed.txt", 'w') as Todos_file:
+            for entry in Todo_completed_list:
+                Todos_file.write(str(entry))
         return 0
     except:
         return 1
@@ -78,22 +74,38 @@ def sortlist() -> None:
     Todo_uncompleted_list.sort(key = lambda x: x.duedate)
     Todo_completed_list.sort(key = lambda x: x.duedate)
 
+width = 120
+
 def contents(page) -> str:
     sortlist()
-    global content_mode, mode
+    ret = ''
+    global content_mode, mode, width
     if content_mode == 0:
         ret = f" Showing entries number {10 * page} to {10 * page + 10}:\n"
         for i in range(len(Todo_uncompleted_list)):
             if 10 * page - 1 < i < 10 + 10 * page - 1:
                 tb_appended = f" {i}. {Todo_uncompleted_list[i].title}"
-                if len(tb_appended) > 49:
-                    tb_appended = tb_appended[:50]
+                if len(tb_appended) > (width - 17):
+                    tb_appended = tb_appended[:(width - 17)]
                     tb_appended += '-'
                 tb_appended += f" | Due: {Todo_uncompleted_list[i].duedate // 10000}-{Todo_uncompleted_list[i].duedate // 100 % 100}-{Todo_uncompleted_list[i].duedate % 100}\n"
             ret += tb_appended
     elif content_mode == 1:
         i = curr_view + 10 * page
         ret = f" Title: {Todo_uncompleted_list[i].title}\n Due: {Todo_uncompleted_list[i].duedate // 10000}-{Todo_uncompleted_list[i].duedate // 100 % 100}-{Todo_uncompleted_list[i].duedate % 100}\n Set: {Todo_uncompleted_list[i].setdate // 10000}-{Todo_uncompleted_list[i].setdate // 100 % 100}-{Todo_uncompleted_list[i].setdate % 100}"
+    elif content_mode == 2:
+        ret = f" Showing entries number {10 * page} to {10 * page + 10}:\n"
+        for i in range(len(Todo_completed_list)):
+            if 10 * page - 1 < i < 10 + 10 * page - 1:
+                tb_appended = f" {i}. {Todo_completed_list[i].title}"
+                if len(tb_appended) > 49:
+                    tb_appended = tb_appended[:50]
+                    tb_appended += '-'
+                tb_appended += f" | Due: {Todo_completed_list[i].duedate // 10000}-{Todo_completed_list[i].duedate // 100 % 100}-{Todo_completed_list[i].duedate % 100}\n"
+            ret += tb_appended
+    elif content_mode == 3:
+        i = curr_view + 10 * page
+        ret = f" Title: {Todo_completed_list[i].title}\n Due: {Todo_completed_list[i].duedate // 10000}-{Todo_completed_list[i].duedate // 100 % 100}-{Todo_completed_list[i].duedate % 100}\n Set: {Todo_completed_list[i].setdate // 10000}-{Todo_completed_list[i].setdate // 100 % 100}-{Todo_completed_list[i].setdate % 100}"
     elif content_mode == 20:
         ret = f" Title: {tb_added.title}\n Due: {tb_added.duedate // 10000}-{tb_added.duedate // 100 % 100}-{tb_added.duedate % 100}\n Set: {tb_added.setdate // 10000}-{tb_added.setdate // 100 % 100}-{tb_added.setdate % 100}"
     elif content_mode == 21:
@@ -134,7 +146,10 @@ def loop(cmd, focus_win_name):
             elif cmd == 's':
                 mode = 'r'
             elif cmd == 'x':
-                content_mode = 0
+                if content_mode == 3:
+                    content_mode = 2
+                elif content_mode == 1:
+                    content_mode = 0
             elif cmd == 'w':
                 save_todos()
             elif cmd == 'c':
@@ -142,11 +157,18 @@ def loop(cmd, focus_win_name):
             elif cmd == 'a':
                 content_mode = 20
                 mode = 'title_req'
+            elif cmd == 't':
+                if content_mode == 0:
+                    content_mode = 2
+                elif content_mode == 2:
+                    content_mode = 0
+                else:
+                    content_mode = 2
             page = page % (len(Todo_uncompleted_list) // 10 + 1)
         elif mode == 'r':
             try:
                 if -1 < int(cmd) < 10 and int(cmd) <= len(Todo_uncompleted_list):
-                    content_mode = 1
+                    content_mode += 1
                     curr_view = int(cmd)
                     mode = ' '
             except:

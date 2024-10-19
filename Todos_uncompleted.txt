@@ -1,1 +1,1 @@
-Implement toggle view feature|20241018|20241019^Revise for Maths tracker|20241018|20241020^Create calendar plugin|20241018|20241031^Finish project|20241016|20241231^
+Revise for Maths tracker|20241018|20241020^Finish Maths homework|20241019|20241020^Revise for Maths tracker|20241019|20241020^Create calendar plugin|20241018|20241031^Finish project|20241016|20241231^

@@ -19,9 +19,8 @@ class window:
     def __str__(self):
         return f"--------------\nwin name: {self.name}\nwidth | height: {self.width} | {self.height}\nborder type: {self.border_type}\nlocation: {x}, {y}\ncontents: {contents}\n"
 
-config_file = open("config.txt", 'r')
-config_file_raw = config_file.read()
-config_file.close()
+with open("config.txt", 'r') as config_file:
+    config_file_raw = config_file.read()
 wins_raw = config_file_raw.split('\n')[:-1]
 wins: list[window] = []
   

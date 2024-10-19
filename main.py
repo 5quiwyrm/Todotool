@@ -4,9 +4,8 @@
 import Render
 import os
 
-plugins_file = open("plugins.txt", 'r')
-plugins_raw = plugins_file.read()
-plugins_file.close()
+with open("plugins.txt", 'r') as plugins_file:
+    plugins_raw = plugins_file.read()
 plugins = plugins_raw[:-1].split(' ')
 import_mods = ''
 contents_arry: list[str] = []

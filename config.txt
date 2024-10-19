@@ -1,3 +1,2 @@
-Todos: contents='0' width=60
-Todos2: contents='0' width=60 y=60
+Todos: contents='0'
 
